@@ -1,0 +1,113 @@
+.welcomeMenuContainer {
+    height: 100%;
+    background-color: #e3c4a2;
+    font-family: inherit;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.welcomeHeader h2 {
+    margin: 0;
+    font-weight: normal;
+}
+
+.welcomeHeader h1 {
+    margin: 5px 0 20px 0;
+}
+
+.welcomeOptions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.questionsCard {
+    padding: 5px 10px;
+}
+
+.optionButton {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 12px 5px;
+    background: none;
+    border: none;
+    text-align: left;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.questionsCard .optionButton {
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.questionsCard .optionButton:last-child {
+    border-bottom: none;
+}
+
+.optionButton .optionText {
+    flex-grow: 1;
+    margin-left: 10px;
+}
+
+.arrow {
+    color: #888;
+}
+
+.chatCard {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    cursor: pointer;
+}
+
+.chatInfo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatIcon {
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    padding: 8px;
+    font-weight: bold;
+}
+
+.chatText {
+    display: flex;
+    flex-direction: column;
+}
+
+.chatText span {
+    color: #555;
+    font-size: 14px;
+}
+
+.sendIcon {
+    transform: scale(1.5);
+    fill: #555;
+}
+
+.previousConversationLink {
+    text-align: center;
+    margin-top: 10px;
+    color: #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
