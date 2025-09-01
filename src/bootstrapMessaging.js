@@ -16,50 +16,65 @@ import Draggable from "./ui-effects/draggable";
 
 export default function BootstrapMessaging() {
     let [shouldShowMessagingButton, setShowMessagingButton] = useState(false);
-    let [orgId, setOrgId] = useState('00DOg000001PcHd');
-    let [deploymentDevName, setDeploymentDevName] = useState('check');
-    let [messagingURL, setMessagingURL] = useState('https://takingshape--miaw.sandbox.my.salesforce-scrt.com');
+    let [orgId, setOrgId] = useState('');
+    let [deploymentDevName, setDeploymentDevName] = useState('');
+    let [messagingURL, setMessagingURL] = useState('');
     let [shouldDisableMessagingButton, setShouldDisableMessagingButton] = useState(false);
     let [shouldShowMessagingWindow, setShouldShowMessagingWindow] = useState(false);
     let [showMessagingButtonSpinner, setShowMessagingButtonSpinner] = useState(false);
     let [isExistingConversation, setIsExistingConversation] = useState(false);
 
     useEffect(() => {
-    // Initialize messaging client immediately with hardcoded values
-    initializeMessagingClient('00DOg000001PcHd', 'check', 'https://takingshape--miaw.sandbox.my.salesforce-scrt.com');
-    
-    const storage = determineStorageType();
-    if (!storage) {
-        console.error(`Cannot initialize the app. Web storage is required for the app to function.`);
-        return;
-    }
-
-    const messaging_webstorage_key = Object.keys(storage).filter(item => item.startsWith(APP_CONSTANTS.WEB_STORAGE_KEY))[0];
-
-    if (messaging_webstorage_key) {
-        // Existing conversation logic
-        const webStoragePayload = storage.getItem(messaging_webstorage_key);
-        const messagingJwt = getItemInWebStorageByKey(STORAGE_KEYS.JWT);
-        if (messagingJwt) {
-            setIsExistingConversation(true);
-            setShouldShowMessagingWindow(true); // Auto-show existing conversation
+        const storage = determineStorageType();
+        if (!storage) {
+            console.error(`Cannot initialize the app. Web storage is required for the app to function.`);
+            return;
         }
-    } 
-    
-    // Auto-start new conversation immediately
-    console.log("Auto-starting chat conversation...");
-    setShowMessagingButtonSpinner(true);
-    
-    // Simulate the "Let's Chat" button click after a brief delay
-    setTimeout(() => {
-        handleMessagingButtonClick({ preventDefault: () => {} });
-    }, 1000);
 
-    return () => {
-        showMessagingWindow(false);
-    };
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, []);
+        const messaging_webstorage_key = Object.keys(storage).filter(item => item.startsWith(APP_CONSTANTS.WEB_STORAGE_KEY))[0];
+
+        if (messaging_webstorage_key) {
+            const webStoragePayload = storage.getItem(messaging_webstorage_key);
+            const orgId = getItemInPayloadByKey(webStoragePayload, STORAGE_KEYS.ORGANIZATION_ID);
+            const deploymentDevName = getItemInPayloadByKey(webStoragePayload, STORAGE_KEYS.DEPLOYMENT_DEVELOPER_NAME);
+            const messagingUrl = getItemInPayloadByKey(webStoragePayload, STORAGE_KEYS.MESSAGING_URL);
+
+            if (!isValidOrganizationId(orgId)) {
+                console.warn(`Invalid organization id exists in the web storage: ${orgId}. Cleaning up the invalid object from the web storage.`);
+                storage.removeItem(messaging_webstorage_key);
+                // New conversation.
+                setIsExistingConversation(false);
+                return;
+            }
+            
+            // Re-Initialize state variables from the values in the web storage. This also re-populates app's deployment parameters input form fields with the previously entered data, in case of a messaging session continuation (e.g. page reload).
+            setOrgId(orgId);
+            setDeploymentDevName(deploymentDevName);
+            setMessagingURL(messagingUrl);
+
+            // Initialize messaging client.
+            initializeMessagingClient(orgId, deploymentDevName, messagingUrl);
+
+            const messagingJwt = getItemInWebStorageByKey(STORAGE_KEYS.JWT);
+            if (messagingJwt) {
+                // Existing conversation.
+                setIsExistingConversation(true);
+                setShowMessagingButton(true);
+                setShouldDisableMessagingButton(true);
+                setShouldShowMessagingWindow(true);
+            } else {
+                // New conversation.
+                setIsExistingConversation(false);
+            }
+        } else {
+            // New conversation.
+            setIsExistingConversation(false);
+        }
+
+        return () => {
+            showMessagingWindow(false);
+        };
+    }, []);
 
     /**
      * Initialize the messaging client by
@@ -196,36 +211,52 @@ export default function BootstrapMessaging() {
     }
 
     return (
-    <>
-        {/* Show loading message while auto-starting */}
-        {!shouldShowMessagingWindow && (
-            <div style={{ 
-                textAlign: 'center', 
-                padding: '20px',
-                color: '#666',
-                fontSize: '14px'
-            }}>
-                <div style={{ marginBottom: '10px' }}>Starting chat...</div>
-                <div className="spinner" style={{
-                    width: '30px',
-                    height: '30px',
-                    border: '3px solid #f3f3f3',
-                    borderTop: '3px solid #3fc56e',
-                    borderRadius: '50%',
-                    animation: 'spin 1s linear infinite',
-                    margin: '0 auto'
-                }}></div>
+        <>
+            <h1>Messaging for Web - Sample App</h1>
+            <div className="deploymentDetailsForm">
+                <h4>Input your Embedded Service (Custom Client) deployment details below</h4>
+                <label>Organization ID</label>
+                <input
+                    type="text"
+                    value={orgId || ""}
+                    onChange={e => setOrgId(e.target.value.trim())}
+                    disabled={shouldShowMessagingButton}>
+                </input>
+                <label>Developer Name</label>
+                <input
+                    type="text"
+                    value={deploymentDevName || ""}
+                    onChange={e => setDeploymentDevName(e.target.value.trim())}
+                    disabled={shouldShowMessagingButton}>
+                </input>
+                <label>URL</label>
+                <input
+                    type="text"
+                    value={messagingURL || ""}
+                    onChange={e => setMessagingURL(e.target.value.trim())}
+                    disabled={shouldShowMessagingButton}>
+                </input>
+                <button
+                    className="deploymentDetailsFormSubmitButton"
+                    onClick={handleDeploymentDetailsFormSubmit}
+                    disabled={shouldDisableFormSubmitButton()}
+                >
+                    Submit
+                </button>
             </div>
-        )}
-        
-        {shouldShowMessagingWindow &&
-            <div style={{ width: '100%', height: '100vh' }}>
-                <MessagingWindow
-                    isExistingConversation={isExistingConversation}
-                    showMessagingWindow={showMessagingWindow}
-                    deactivateMessagingButton={appUiReady} />
-            </div>
-        }
-    </>
-);
+            {shouldShowMessagingButton &&
+                <MessagingButton
+                    clickHandler={handleMessagingButtonClick}
+                    disableButton={shouldDisableMessagingButton}
+                    showSpinner={showMessagingButtonSpinner} />}
+            {shouldShowMessagingWindow &&
+                <Draggable intitialPosition={{ x: 1000, y: 500 }}>
+                    <MessagingWindow
+                        isExistingConversation={isExistingConversation}
+                        showMessagingWindow={showMessagingWindow}
+                        deactivateMessagingButton={appUiReady} />
+                </Draggable>
+            }
+        </>
+    );
 }
