@@ -26,7 +26,7 @@ export default function BootstrapMessaging() {
 
     useEffect(() => {
     // Initialize messaging client immediately with hardcoded values
-    initializeMessagingClient(HARDCODED_ORG_ID, HARDCODED_DEPLOYMENT_NAME, HARDCODED_MESSAGING_URL);
+    initializeMessagingClient('00DOg000001PcHd', 'check', 'https://takingshape--miaw.sandbox.my.salesforce-scrt.com');
     
     const storage = determineStorageType();
     if (!storage) {
