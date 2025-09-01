@@ -74,7 +74,7 @@ export default function BootstrapMessaging() {
         return () => {
             showMessagingWindow(false);
         };
-    }, []);
+    }, [initializeMessagingClient]);
 
     /**
      * Initialize the messaging client by
