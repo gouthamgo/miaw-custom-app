@@ -16,9 +16,9 @@ import Draggable from "./ui-effects/draggable";
 
 export default function BootstrapMessaging() {
     let [shouldShowMessagingButton, setShowMessagingButton] = useState(false);
-    let [orgId, setOrgId] = useState('00DOg000001PcHd');
-    let [deploymentDevName, setDeploymentDevName] = useState('check');
-    let [messagingURL, setMessagingURL] = useState('https://takingshape--miaw.sandbox.my.salesforce-scrt.com');
+    let [orgId, setOrgId] = useState('');
+    let [deploymentDevName, setDeploymentDevName] = useState('');
+    let [messagingURL, setMessagingURL] = useState('');
     let [shouldDisableMessagingButton, setShouldDisableMessagingButton] = useState(false);
     let [shouldShowMessagingWindow, setShouldShowMessagingWindow] = useState(false);
     let [showMessagingButtonSpinner, setShowMessagingButtonSpinner] = useState(false);
