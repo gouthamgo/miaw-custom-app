@@ -15,10 +15,10 @@ import { APP_CONSTANTS, STORAGE_KEYS } from './helpers/constants';
 import Draggable from "./ui-effects/draggable";
 
 export default function BootstrapMessaging() {
-    let [shouldShowMessagingButton, setShowMessagingButton] = useState(true);
-    let [orgId, setOrgId] = useState('00DOg000001PcHd');
-    let [deploymentDevName, setDeploymentDevName] = useState('check');
-    let [messagingURL, setMessagingURL] = useState('https://takingshape--miaw.sandbox.my.salesforce-scrt.com');
+    let [shouldShowMessagingButton, setShowMessagingButton] = useState(false);
+    let [orgId, setOrgId] = useState('');
+    let [deploymentDevName, setDeploymentDevName] = useState('');
+    let [messagingURL, setMessagingURL] = useState('');
     let [shouldDisableMessagingButton, setShouldDisableMessagingButton] = useState(false);
     let [shouldShowMessagingWindow, setShouldShowMessagingWindow] = useState(false);
     let [showMessagingButtonSpinner, setShowMessagingButtonSpinner] = useState(false);
@@ -58,7 +58,7 @@ export default function BootstrapMessaging() {
             const messagingJwt = getItemInWebStorageByKey(STORAGE_KEYS.JWT);
             if (messagingJwt) {
                 // Existing conversation.
-                setIsExistingConversation(false);
+                setIsExistingConversation(true);
                 setShowMessagingButton(true);
                 setShouldDisableMessagingButton(true);
                 setShouldShowMessagingWindow(true);
@@ -74,7 +74,7 @@ export default function BootstrapMessaging() {
         return () => {
             showMessagingWindow(false);
         };
-    }, [initializeMessagingClient]);
+    }, []);
 
     /**
      * Initialize the messaging client by
